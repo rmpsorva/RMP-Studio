@@ -3,79 +3,132 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<meta name="theme-color" content="#0a0a0a"/>
+<meta name="theme-color" content="#070707"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-title" content="AURION"/>
 <link rel="manifest" href="manifest.json"/>
 <link rel="apple-touch-icon" href="icon.svg"/>
 <title>AURION — by R.M.P</title>
 <style>
-:root{--bg:#070707;--gold:#c9a227;--g2:#e0c36a;--btn:#c4a04a;--t:#f3f3f3;--m:#9a9a9a}
+:root{--bg:#070707;--gold:#c9a227;--g2:#e0c36a;--btn:#c4a04a;--t:#f3f3f3;--m:#9a9a9a;--card:#111;--line:#1d1d1d}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--t);font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;padding:16px 16px 92px}
-.w{max-width:720px;margin:0 auto}
-.top{display:flex;justify-content:space-between}
-.mark{letter-spacing:.32em;font-size:11px;font-weight:700;color:var(--gold)}
-h1{font-size:28px;font-weight:800;margin-top:6px}
-.logo{width:52px;height:52px;border-radius:8px;border:1px solid #3a3118}
-.sub{font-size:10px;letter-spacing:.12em;text-align:right;margin-top:6px;color:#ccc}
-.tag{color:var(--m);font-size:13px;margin:8px 0 14px}
-.rule{height:1px;background:linear-gradient(90deg,var(--gold),transparent 85%);opacity:.55;margin-bottom:16px}
+body{background:var(--bg);color:var(--t);font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;padding:0 0 96px}
+.w{max-width:720px;margin:0 auto;padding:0 16px}
+.hero{position:relative;height:168px;overflow:hidden;border-bottom:1px solid #2a2310}
+.hero img{width:100%;height:100%;object-fit:cover;object-position:center 28%;filter:saturate(1.05) contrast(1.05)}
+.hero .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,7,7,.15),rgba(7,7,7,.92))}
+.hero .brand{position:absolute;left:16px;right:16px;bottom:12px;display:flex;justify-content:space-between;align-items:flex-end}
+.mark{letter-spacing:.32em;font-size:10px;font-weight:700;color:var(--gold)}
+h1{font-size:28px;font-weight:800;line-height:1}
+.sub{font-size:10px;letter-spacing:.12em;color:#ccc;text-align:right}
+.tag{color:var(--m);font-size:13px;margin:12px 0 14px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.card{background:#111;border:1px solid #1d1d1d;border-radius:16px;padding:14px;min-height:80px}
-.card.active{border-color:var(--gold)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;min-height:78px}
+.card.active{border-color:var(--gold);box-shadow:0 0 0 1px rgba(201,162,39,.25)}
 .card span{color:var(--m);font-size:12px}
 .work{margin-top:14px;background:#161616;border:1px solid #1c1c1c;border-radius:18px;padding:16px}
 .drop{border:1.5px dashed #3a3424;border-radius:14px;padding:20px 12px;text-align:center;background:#0d0d0d}
-.fn{margin-top:10px;font-size:13px;color:var(--g2);word-break:break-all}
+.drop.over{border-color:var(--gold);background:#14110a}
+.fn{margin-top:8px;font-size:13px;color:var(--g2);word-break:break-all}
+.meta{margin-top:4px;font-size:11px;color:#888}
+.prev{margin-top:10px;max-height:160px;width:100%;object-fit:contain;border-radius:10px;background:#000;display:none}
 .lbl{display:block;margin:14px 0 8px;font-size:11px;letter-spacing:.08em;color:#bbb;text-transform:uppercase}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip,select,input{border:1px solid #333;background:#101010;color:#eee;border-radius:12px;padding:8px 12px}
-.chip{border-radius:999px;font-weight:600}
+.chip,select,input,textarea{border:1px solid #333;background:#101010;color:#eee;border-radius:12px;padding:8px 12px}
+.chip{border-radius:999px;font-weight:600;cursor:pointer}
 .chip.on{background:var(--btn);color:#111;border-color:var(--btn)}
-select,input[type=url],input[type=text],input[type=number]{width:100%}
+select,input[type=url],input[type=text],input[type=number],input[type=password],textarea{width:100%}
+textarea{min-height:110px;resize:vertical}
 input[type=range]{width:100%;accent-color:var(--gold)}
 .row{display:flex;gap:8px}.row>*{flex:1}
-.btn{display:block;width:100%;margin-top:12px;background:var(--btn);color:#111;border:0;border-radius:14px;padding:15px;font-weight:800;letter-spacing:.07em}
+.btn{display:block;width:100%;margin-top:12px;background:var(--btn);color:#111;border:0;border-radius:14px;padding:15px;font-weight:800;letter-spacing:.06em}
 .btn.ghost{background:transparent;color:var(--g2);border:1px solid #3a3118}
 .btn:disabled{opacity:.45}
-.status{margin-top:12px;font-size:13px;color:var(--m)}
-footer{position:fixed;left:0;right:0;bottom:0;background:rgba(7,7,7,.94);border-top:1px solid #1b1b1b;padding:8px 8px calc(10px + env(safe-area-inset-bottom))}
+.bar{height:6px;background:#222;border-radius:99px;margin-top:10px;overflow:hidden;display:none}
+.bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--g2));transition:width .2s}
+.status{margin-top:12px;font-size:13px;color:var(--m);white-space:pre-wrap}
+.hint{font-size:11px;color:#777;margin-top:8px}
+footer{position:fixed;left:0;right:0;bottom:0;background:rgba(7,7,7,.96);border-top:1px solid #1b1b1b;padding:8px 8px calc(10px + env(safe-area-inset-bottom));z-index:5}
 .tabs{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
 .tabs button{background:0;border:0;color:#888;font-size:11px;font-weight:700;padding:8px 2px}
 .tabs button.on{color:var(--g2)}
 .hidden{display:none!important}
 a.link{color:var(--g2)}
-</style></head><body>
+.list{margin-top:10px}
+.item{display:flex;justify-content:space-between;gap:8px;align-items:center;border:1px solid #222;border-radius:12px;padding:10px;margin-top:8px}
+.item b{font-size:13px;word-break:break-all}
+.item small{color:#888;display:block}
+.item button{border:0;background:#1a1a1a;color:var(--g2);border-radius:10px;padding:8px 10px;font-weight:700}
+.warn{color:#e0a060}
+.ok{color:#8fd18f}
+</style>
+</head>
+<body>
+<div class="hero">
+  <img id="heroImg" alt="AURION squad"/>
+  <div class="veil"></div>
+  <div class="brand">
+    <div><div class="mark">R . M . P</div><h1>AURION</h1></div>
+    <div class="sub">BY REAL MENTE PODER</div>
+  </div>
+</div>
 <div class="w">
-<header class="top"><div><div class="mark">R . M . P</div><h1>AURION</h1></div><div><img class="logo" src="icon.svg" alt="AURION"/><div class="sub">BY REAL MENTE PODER</div></div></header>
-<p class="tag">Convierte y entrega archivos. Sin Dropbox. Sin Convertio.</p>
-<div class="rule"></div>
+<p class="tag">Convierte y entrega archivos en el teléfono. Sin nube. Sin Convertio.</p>
 <section class="grid">
-<article class="card active" data-tool="video"><b>Video</b><br><span>MP4 WebM GIF MP3</span></article>
-<article class="card" data-tool="audio"><b>Audio</b><br><span>MP3 WAV AAC M4A</span></article>
-<article class="card" data-tool="image"><b>Imagen</b><br><span>JPG PNG WEBP PDF</span></article>
-<article class="card" data-tool="file"><b>Archivo</b><br><span>URL ZIP GZIP Vault</span></article>
+<article class="card active" data-tool="video"><b>Video</b><br><span>MP4 WebM GIF · recorte · frame</span></article>
+<article class="card" data-tool="audio"><b>Audio</b><br><span>MP3 WAV M4A · recorte</span></article>
+<article class="card" data-tool="image"><b>Imagen</b><br><span>JPG PNG WEBP PDF · lote</span></article>
+<article class="card" data-tool="file"><b>Archivo</b><br><span>URL ZIP GZIP</span></article>
 </section>
 <section class="work" id="pm">
-<div class="drop" id="drop"><b>Toca para elegir archivo</b><input id="file" type="file" class="hidden"/><div class="fn" id="fname"></div></div>
+<div class="drop" id="drop"><b>Toca, suelta o pega</b><input id="file" type="file" class="hidden"/><div class="fn" id="fname"></div><div class="meta" id="fmeta"></div></div>
+<img class="prev" id="prev" alt="preview"/>
 <label class="lbl">Formato</label><div class="chips" id="formats"></div>
-<div id="imageOpts"><label class="lbl">Tamaño</label>
-<select id="fit"><option value="original">Original</option><option value="1080">1080</option><option value="tiktok">TikTok 9:16</option><option value="square">1:1</option></select></div>
-<div id="trimWrap" class="hidden"><label class="lbl">Recorte s</label><div class="row"><input type="number" id="tStart" placeholder="Inicio"/><input type="number" id="tEnd" placeholder="Fin"/></div></div>
+<div id="imageOpts" class="hidden">
+  <label class="lbl">Tamaño</label>
+  <select id="fit">
+    <option value="original">Original</option>
+    <option value="1080">1080 ancho</option>
+    <option value="tiktok">TikTok 9:16</option>
+    <option value="square">1:1</option>
+    <option value="story">Instagram 4:5</option>
+  </select>
+  <label class="lbl">Rotar</label>
+  <div class="row"><button class="btn ghost" id="rotL" type="button">-90</button><button class="btn ghost" id="rotR" type="button">+90</button></div>
+</div>
+<div id="mediaOpts" class="hidden">
+  <label class="lbl">Escala video</label>
+  <select id="vscale"><option value="orig">Original</option><option value="720">720p (más liviano)</option><option value="1080">1080p</option></select>
+  <label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:13px;color:#bbb"><input type="checkbox" id="mute"/> Silenciar video</label>
+</div>
+<div id="trimWrap" class="hidden"><label class="lbl">Recorte (segundos)</label><div class="row"><input type="number" id="tStart" placeholder="Inicio" min="0" step="0.1"/><input type="number" id="tEnd" placeholder="Fin" min="0" step="0.1"/></div></div>
 <label class="lbl">Calidad <span id="qval">80</span></label><input type="range" id="quality" min="40" max="100" value="80"/>
 <button class="btn" id="convertBtn" disabled>CONVERTIR Y DESCARGAR</button>
-<div class="row"><button class="btn ghost" id="audioBtn">EXTRAER AUDIO</button><button class="btn ghost" id="pdfBtn">IMAGEN → PDF</button></div>
+<div class="row"><button class="btn ghost" id="audioBtn">EXTRAER AUDIO</button><button class="btn ghost" id="pdfBtn">IMAGEN A PDF</button></div>
+<div class="row"><button class="btn ghost" id="frameBtn">SACAR FRAME</button><button class="btn ghost" id="vaultAddBtn">GUARDAR EN VAULT</button></div>
+<div class="bar" id="bar"><i id="barI"></i></div>
 <p class="status" id="status"></p>
+<p class="hint">Video pesado en iPhone: usa 720p o un recorte corto. Todo se procesa aqui, no se sube.</p>
 </section>
 <section class="work hidden" id="pf">
-<p>Vault: <a class="link" href="vault.html">MENTAL STATE</a></p>
-<label class="lbl">URL</label><input type="url" id="url" placeholder="https://..."/>
+<label class="lbl">Descargar URL</label>
+<input type="url" id="url" placeholder="https://..."/>
 <button class="btn" id="dlUrlBtn">DESCARGAR</button>
-<label class="lbl">ZIP</label>
+<label class="lbl">ZIP / GZIP</label>
 <div class="drop" id="dropZip"><b>Varios archivos</b><input id="zipFiles" type="file" multiple class="hidden"/><div class="fn" id="znames"></div></div>
-<div class="row"><button class="btn" id="zipBtn">CREAR ZIP</button><button class="btn ghost" id="gzBtn">GZIP</button></div>
+<div class="row"><button class="btn" id="zipBtn">CREAR ZIP</button><button class="btn ghost" id="gzBtn">GZIP TODOS</button></div>
 <p class="status" id="zstatus"></p>
+</section>
+<section class="work hidden" id="pv">
+<p class="mark" style="margin-bottom:8px">MENTAL STATE</p>
+<p class="hint">Notas y archivos quedan en este telefono (IndexedDB). No es Dropbox.</p>
+<label class="lbl">Nota</label>
+<textarea id="note" placeholder="Estado mental, lyric, idea..."></textarea>
+<button class="btn" id="noteBtn">GUARDAR NOTA</button>
+<label class="lbl">Archivos en el vault</label>
+<div class="drop" id="dropVault"><b>Meter archivo al vault</b><input id="vaultFiles" type="file" multiple class="hidden"/></div>
+<div class="list" id="vlist"></div>
+<p class="status" id="vstatus"></p>
 </section>
 </div>
 <footer><div class="tabs">
@@ -85,37 +138,8 @@ a.link{color:var(--g2)}
 <button data-go="file">Archivo</button>
 <button data-go="vault">Vault</button>
 </div></footer>
+<script src="hero.js"></script>
 <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
 <script src="https://unpkg.com/@ffmpeg/util@0.12.1/dist/umd/index.js"></script>
-<script>
-const TOOLS={video:{accept:"video/*",formats:["mp4","webm","gif","mp3"]},audio:{accept:"audio/*",formats:["mp3","wav","m4a"]},image:{accept:"image/*",formats:["jpg","png","webp"]},file:{accept:"*/*",formats:[]}};
-let tool="video",file=null,zipList=[],fmt="mp4",ffmpeg,ready=false;
-const $=id=>document.getElementById(id);
-function setStatus(m){$("status").textContent=m||"";}
-function outName(s,e){return s.replace(/\.[^.]+$/,"")+"-AURION."+e;}
-function dl(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();}
-function speak(){try{const u=new SpeechSynthesisUtterance("Listo");u.lang="es-MX";speechSynthesis.speak(u);}catch(e){}}
-function renderFormats(){const list=TOOLS[tool].formats;$("formats").innerHTML="";fmt=list[0]||"";list.forEach((f,i)=>{const b=document.createElement("button");b.className="chip"+(i?"":" on");b.textContent=f.toUpperCase();b.onclick=()=>{fmt=f;[...$("formats").children].forEach(c=>c.classList.remove("on"));b.classList.add("on");};$("formats").appendChild(b);});}
-function setTool(next){if(next==="vault"){location.href="vault.html";return;}tool=next;document.querySelectorAll(".card").forEach(c=>c.classList.toggle("active",c.dataset.tool===next));document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",b.dataset.go===next));$("pm").classList.toggle("hidden",next==="file");$("pf").classList.toggle("hidden",next!=="file");$("imageOpts").classList.toggle("hidden",next!=="image");$("trimWrap").classList.toggle("hidden",next!=="video"&&next!=="audio");$("audioBtn").classList.toggle("hidden",next!=="video");$("pdfBtn").classList.toggle("hidden",next!=="image");$("file").accept=TOOLS[next]?.accept||"*/*";$("file").multiple=next==="image";file=null;$("fname").textContent="";$("convertBtn").disabled=true;if(next!=="file")renderFormats();}
-document.querySelectorAll(".card").forEach(c=>c.onclick=()=>setTool(c.dataset.tool));
-document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>setTool(b.dataset.go));
-$("quality").oninput=()=>$("qval").textContent=$("quality").value;
-function bind(z,p,fn){z.onclick=()=>p.click();p.onchange=()=>{if(p.files.length)fn([...p.files]);};}
-bind($("drop"),$("file"),files=>{file=files[0];window.batch=files.filter(f=>f.type.startsWith("image/"));$("fname").textContent=files.map(f=>f.name).join(", ");$("convertBtn").disabled=false;});
-bind($("dropZip"),$("zipFiles"),files=>{zipList=files;$("znames").textContent=files.map(f=>f.name).join(", ");});
-async function raster(f,ext,q){const bmp=await createImageBitmap(f);let tw=bmp.width,th=bmp.height;const fit=$("fit").value;if(fit==="1080"){tw=1080;th=Math.round(bmp.height*1080/bmp.width);}if(fit==="square"){tw=th=1080;}if(fit==="tiktok"){tw=1080;th=1920;}const c=document.createElement("canvas");c.width=tw;c.height=th;const ctx=c.getContext("2d");ctx.fillStyle="#000";ctx.fillRect(0,0,tw,th);const sc=Math.max(tw/bmp.width,th/bmp.height);ctx.drawImage(bmp,(tw-bmp.width*sc)/2,(th-bmp.height*sc)/2,bmp.width*sc,bmp.height*sc);const mime=ext==="jpg"?"image/jpeg":ext==="webp"?"image/webp":"image/png";return new Promise(r=>c.toBlob(r,mime,q/100));}
-async function loadFF(){if(ready)return;const {FFmpeg}=FFmpegWASM;const {toBlobURL}=FFmpegUtil;ffmpeg=new FFmpeg();const base="https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd";await ffmpeg.load({coreURL:await toBlobURL(base+"/ffmpeg-core.js","text/javascript"),wasmURL:await toBlobURL(base+"/ffmpeg-core.wasm","application/wasm")});ready=true;}
-async function convertMedia(f,ext,forceAudio){await loadFF();const {fetchFile}=FFmpegUtil;const inn="in.bin";const outExt=forceAudio?"mp3":ext;const out="out."+outExt;await ffmpeg.writeFile(inn,await fetchFile(f));const trim=[];if($("tStart").value)trim.push("-ss",$("tStart").value);if($("tEnd").value)trim.push("-to",$("tEnd").value);let mid=forceAudio||outExt==="mp3"?["-vn","-acodec","libmp3lame"]:outExt==="gif"?["-vf","fps=12,scale=480:-1"]:["-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac"];await ffmpeg.exec(["-i",inn,...trim,...mid,"-y",out]);const data=await ffmpeg.readFile(out);return {blob:new Blob([data.buffer]),name:outName(f.name,outExt)};}
-async function run(forceAudio){if(!file)return;$("convertBtn").disabled=true;try{if(tool==="image"){const blob=await raster(file,fmt,+$("quality").value);dl(blob,outName(file.name,fmt));setStatus("Listo.");speak();}else{const r=await convertMedia(file,fmt,forceAudio);dl(r.blob,r.name);setStatus("Listo: "+r.name);speak();}}catch(e){setStatus("Fallo. Activa Pages (HTTPS) o usa un archivo más liviano.");}finally{$("convertBtn").disabled=false;}}
-$("convertBtn").onclick=()=>run(false);$("audioBtn").onclick=()=>run(true);
-$("pdfBtn").onclick=async()=>{const list=window.batch?.length?window.batch:(file?[file]:[]);if(!list.length)return;const pages=[];for(const f of list){const blob=await raster(f,"jpg",+$("quality").value);const jpeg=new Uint8Array(await blob.arrayBuffer());const bmp=await createImageBitmap(blob);pages.push({jpeg,w:bmp.width,h:bmp.height});}const enc=new TextEncoder();const parts=[];const starts=[];const add=s=>parts.push(typeof s==="string"?enc.encode(s):s);const mark=()=>starts.push(parts.reduce((n,p)=>n+p.length,0));add("%PDF-1.4\n");mark();add("1 0 obj<< /Type /Catalog /Pages 2 0 R >>endobj\n");mark();let kids="";for(let i=0;i<pages.length;i++)kids+=(3+i*3)+" 0 R ";add("2 0 obj<< /Type /Pages /Count "+pages.length+" /Kids ["+kids+"] >>endobj\n");pages.forEach((p,i)=>{const po=3+i*3,co=po+1,io=po+2;mark();add(po+" 0 obj<< /Type /Page /Parent 2 0 R /MediaBox [0 0 "+p.w+" "+p.h+"] /Contents "+co+" 0 R /Resources << /XObject << /Im"+i+" "+io+" 0 R >> >> >>endobj\n");const st="q "+p.w+" 0 0 "+p.h+" 0 0 cm /Im"+i+" Do Q";mark();add(co+" 0 obj<< /Length "+st.length+" >>stream\n"+st+"\nendstream\nendobj\n");mark();add(io+" 0 obj<< /Type /XObject /Subtype /Image /Width "+p.w+" /Height "+p.h+" /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length "+p.jpeg.length+" >>stream\n");add(p.jpeg);add("\nendstream\nendobj\n");});const xrefAt=parts.reduce((n,p)=>n+p.length,0);let xref="xref\n0 "+(starts.length+1)+"\n0000000000 65535 f \n";starts.forEach(o=>xref+=String(o).padStart(10,"0")+" 00000 n \n");add(xref);add("trailer<< /Size "+(starts.length+1)+" /Root 1 0 R >>\nstartxref\n"+xrefAt+"\n%%EOF");dl(new Blob(parts,{type:"application/pdf"}),"AURION-imagenes.pdf");setStatus("PDF listo.");speak();};
-$("dlUrlBtn").onclick=async()=>{const url=$("url").value.trim();if(!url)return;try{const blob=await(await fetch(url)).blob();dl(blob,url.split("/").pop()||"archivo");$("zstatus").textContent="Descargado.";}catch{$("zstatus").textContent="CORS bloqueó el link.";}};
-function crc32(buf){if(!window.__crc){const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xedb88320^(c>>>1):c>>>1;t[n]=c;}window.__crc=t;}let c=~0;for(let i=0;i<buf.length;i++)c=window.__crc[(c^buf[i])&255]^(c>>>8);return~c>>>0;}
-function u16(n){const b=new Uint8Array(2);new DataView(b.buffer).setUint16(0,n,true);return b;}
-function u32(n){const b=new Uint8Array(4);new DataView(b.buffer).setUint32(0,n,true);return b;}
-async function filesToZip(files){const enc=new TextEncoder();const chunks=[],central=[];let offset=0;for(const f of files){const data=new Uint8Array(await f.arrayBuffer());const name=enc.encode(f.name.replace(/^.*[\\\/]/,""));const crc=crc32(data);const local=[u32(0x04034b50),u16(20),u16(0),u16(0),u16(0),u16(0),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),name,data];chunks.push(...local);central.push(u32(0x02014b50),u16(20),u16(20),u16(0),u16(0),u16(0),u16(0),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(offset),name);offset+=30+name.length+data.length;}const centralSize=central.reduce((s,x)=>s+x.length,0);return new Blob([...chunks,...central,u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(centralSize),u32(offset),u16(0)],{type:"application/zip"});}
-$("zipBtn").onclick=async()=>{if(!zipList.length){$("zstatus").textContent="Elige archivos primero.";return;}dl(await filesToZip(zipList),"AURION-paquete.zip");$("zstatus").textContent="ZIP listo.";speak();};
-$("gzBtn").onclick=async()=>{const src=zipList[0]||file;if(!src){$("zstatus").textContent="Elige un archivo.";return;}if(!window.CompressionStream){$("zstatus").textContent="Este navegador no soporta GZIP.";return;}const blob=await new Response(src.stream().pipeThrough(new CompressionStream("gzip"))).blob();dl(blob,src.name+".gz");$("zstatus").textContent="GZIP listo.";};
-renderFormats();
-if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
-</script></body></html>
+<script src="app.js"></script>
+</body></html>
