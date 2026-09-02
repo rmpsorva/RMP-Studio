@@ -1,5 +1,5 @@
 self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open("aurion-v2").then((c) => c.addAll(["./", "./index.html", "./vault.html", "./hero.js", "./icon.svg", "./manifest.json"])));
+  e.waitUntil(caches.open("aurion-v2").then((c) => c.addAll(["./", "./index.html", "./vault.html", "./app.js", "./hero.js", "./icon.svg", "./manifest.json"])));
   self.skipWaiting();
 });
 self.addEventListener("activate", (e) => {
