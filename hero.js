@@ -1,0 +1,1 @@
+window.AURION_HERO="";
