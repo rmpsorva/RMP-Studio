@@ -1,26 +1,178 @@
-name: pages
+name: AURION CORE factory
+
 on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      mint_release:
+        description: "Publicar / actualizar release firmado aurion-latest"
+        type: boolean
+        default: true
+
+concurrency:
+  group: aurion-core
+  cancel-in-progress: true
+
 permissions:
   contents: read
   pages: write
   id-token: write
-concurrency:
-  group: pages
-  cancel-in-progress: true
+  attestations: write
+  actions: read
+
 jobs:
-  deploy:
+  forge:
+    name: Forjar nucleo
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+      actions: read
+    outputs:
+      digest: ${{ steps.hash.outputs.digest }}
+      version: ${{ steps.meta.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validar nucleo
+        run: |
+          set -euo pipefail
+          for f in index.html app.js vault.html sw.js manifest.json icon.svg factory.html VERIFY.md; do
+            test -f "$f" || { echo "FALTA $f"; exit 1; }
+          done
+          grep -q "AURION" index.html
+          grep -q "ffmpeg" index.html
+
+      - name: Empacar AURION-CORE
+        id: meta
+        run: |
+          set -euo pipefail
+          VERSION="AURION-CORE-${GITHUB_SHA::7}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          mkdir -p dist/pack _site
+          python3 - <<'PY'
+          import json, os, hashlib, datetime, pathlib
+          sha = os.environ["GITHUB_SHA"]
+          run = os.environ["GITHUB_RUN_ID"]
+          server = os.environ.get("GITHUB_SERVER_URL", "https://github.com")
+          repo = os.environ["GITHUB_REPOSITORY"]
+          attempt = os.environ.get("GITHUB_RUN_ATTEMPT", "1")
+          files = []
+          keep = [
+            "index.html","app.js","hero.js","vault.html","sw.js","manifest.json",
+            "icon.svg","_headers",".nojekyll","factory.html","VERIFY.md","README.md",
+            "SECURITY.md","CODEOWNERS"
+          ]
+          for name in keep:
+            p = pathlib.Path(name)
+            if not p.exists():
+              continue
+            digest = hashlib.sha256(p.read_bytes()).hexdigest()
+            files.append({"path": name, "sha256": digest, "bytes": p.stat().st_size})
+          build = {
+            "product": "AURION CORE",
+            "brand": "R.M.P — Real Mente Poder",
+            "repo": repo,
+            "commit": sha,
+            "short": sha[:7],
+            "run_id": run,
+            "run_attempt": attempt,
+            "run_url": f"{server}/{repo}/actions/runs/{run}",
+            "commit_url": f"{server}/{repo}/commit/{sha}",
+            "attested": True,
+            "built_at": datetime.datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+            "verify": f"gh attestation verify AURION-CORE.zip --repo {repo}",
+            "files": files
+          }
+          pathlib.Path("BUILD.json").write_text(json.dumps(build, indent=2), encoding="utf-8")
+          print(json.dumps(build, indent=2))
+          PY
+          for f in index.html app.js hero.js vault.html sw.js manifest.json icon.svg _headers .nojekyll factory.html VERIFY.md README.md SECURITY.md BUILD.json; do
+            [ -f "$f" ] && cp "$f" dist/pack/ && cp "$f" _site/
+          done
+          (cd dist/pack && zip -r -9 ../AURION-CORE.zip .)
+          mkdir -p out
+          cp dist/AURION-CORE.zip BUILD.json out/
+          (cd out && sha256sum AURION-CORE.zip BUILD.json > SHA256SUMS)
+          echo "pack ready $(wc -c < out/AURION-CORE.zip) bytes"
+
+      - name: Digest del nucleo
+        id: hash
+        run: |
+          DIGEST="sha256:$(sha256sum out/AURION-CORE.zip | awk '{print $1}')"
+          echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
+          echo "$DIGEST"
+
+      - name: Firmar procedencia SLSA
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: out/AURION-CORE.zip
+
+      - name: Firmar BUILD.json
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: BUILD.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aurion-core
+          path: out/
+          if-no-files-found: error
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  pages:
+    name: Publicar Pages
+    needs: forge
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
-    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
       - id: deploy
         uses: actions/deploy-pages@v4
+
+  release:
+    name: Release aurion-latest
+    needs: forge
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.mint_release != 'false')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: aurion-core
+          path: dist
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: aurion-latest
+          target_commitish: ${{ github.sha }}
+          name: AURION CORE · attested
+          make_latest: true
+          files: |
+            dist/AURION-CORE.zip
+            dist/SHA256SUMS
+            dist/BUILD.json
+          body: |
+            Nucleo firmado de AURION.
+
+            - Commit: `${{ github.sha }}`
+            - Digest: `${{ needs.forge.outputs.digest }}`
+            - Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Verificar:
+            ```
+            gh attestation verify AURION-CORE.zip --repo ${{ github.repository }}
+            ```
+
+            Live: https://rmpsorva.github.io/RMP-Studio/factory.html
