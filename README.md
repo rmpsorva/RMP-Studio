@@ -1,5 +1,10 @@
 # AURION
-Producto de archivos de R.M.P (Real Mente Poder).
+by R.M.P
 
-Convierte, recorta y entrega video, audio, imagen y paquetes.
-Sin Dropbox. Sin Convertio. Sin caducidad de un link ajeno.
+Convierte video, audio, imagen y archivos en el navegador.
+ZIP, GZIP, PDF, recorte, extraer audio.
+
+## Publicar en el iPhone
+1. Settings → Pages
+2. Source: GitHub Actions (o branch main)
+3. Abre https://rmpsorva.github.io/RMP-Studio/
