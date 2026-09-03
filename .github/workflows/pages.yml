@@ -39,7 +39,7 @@ jobs:
       - name: Validar nucleo
         run: |
           set -euo pipefail
-          for f in index.html app.js vault.html sw.js manifest.json icon.svg factory.html protocol.html proto.js VERIFY.md; do
+          for f in index.html app.js vault.html sw.js manifest.json icon.svg factory.html protocol.html proto.js ledger.json check.html tdmrep.json VERIFY.md; do
             test -f "$f" || { echo "FALTA $f"; exit 1; }
           done
           grep -q "AURION" index.html
@@ -63,6 +63,7 @@ jobs:
           keep = [
             "index.html","app.js","hero.js","vault.html","sw.js","manifest.json",
             "icon.svg","_headers",".nojekyll","factory.html","protocol.html","proto.js",
+            "ledger.json","check.html","tdmrep.json",
             "VERIFY.md","README.md","SECURITY.md","CODEOWNERS"
           ]
           for name in keep:
@@ -89,7 +90,7 @@ jobs:
           pathlib.Path("BUILD.json").write_text(json.dumps(build, indent=2), encoding="utf-8")
           print(json.dumps(build, indent=2))
           PY
-          for f in index.html app.js hero.js vault.html sw.js manifest.json icon.svg _headers .nojekyll factory.html protocol.html proto.js VERIFY.md README.md SECURITY.md BUILD.json; do
+          for f in index.html app.js hero.js vault.html sw.js manifest.json icon.svg _headers .nojekyll factory.html protocol.html proto.js ledger.json check.html tdmrep.json VERIFY.md README.md SECURITY.md BUILD.json; do
             [ -f "$f" ] && cp "$f" dist/pack/ && cp "$f" _site/
           done
           (cd dist/pack && zip -r -9 ../AURION-CORE.zip .)
@@ -170,10 +171,5 @@ jobs:
             - Digest: `${{ needs.forge.outputs.digest }}`
             - Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-            Verificar:
-            ```
-            gh attestation verify AURION-CORE.zip --repo ${{ github.repository }}
-            ```
-
-            Protocolo: https://rmpsorva.github.io/RMP-Studio/protocol.html
-            Live: https://rmpsorva.github.io/RMP-Studio/factory.html
+            Check: https://rmpsorva.github.io/RMP-Studio/check.html
+            Ledger: https://rmpsorva.github.io/RMP-Studio/ledger.json
