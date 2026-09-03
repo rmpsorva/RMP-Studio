@@ -1,0 +1,62 @@
+name: AURION SEAL
+
+# Sella un hash. El archivo NUNCA se sube.
+# Solo el owner del repo puede disparar workflow_dispatch.
+on:
+  workflow_dispatch:
+    inputs:
+      digest:
+        description: "SHA-256 hex de 64 caracteres (sin prefijo sha256:)"
+        required: true
+        type: string
+      name:
+        description: "Nombre del activo (sin ruta)"
+        required: true
+        type: string
+      kind:
+        description: "human | tool | synthetic | mix"
+        required: true
+        type: choice
+        options: [human, tool, synthetic, mix]
+        default: human
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  seal:
+    name: Sellar hash
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validar digest
+        id: v
+        run: |
+          set -euo pipefail
+          D="${{ inputs.digest }}"
+          D="${D#sha256:}"
+          D="$(echo "$D" | tr 'A-F' 'a-f' | tr -d '[:space:]')"
+          if ! echo "$D" | grep -Eq '^[a-f0-9]{64}$'; then
+            echo "Digest invalido. Tiene que ser SHA-256 hex de 64."
+            exit 1
+          fi
+          NAME="$(echo '${{ inputs.name }}' | tr -d '/\\' | cut -c1-120)"
+          echo "digest=$D" >> "$GITHUB_OUTPUT"
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+          echo "kind=${{ inputs.kind }}" >> "$GITHUB_OUTPUT"
+
+      - name: Firmar subject-digest (el binario no esta aqui)
+        uses: actions/attest@v2
+        with:
+          subject-name: ${{ steps.v.outputs.name }}
+          subject-digest: sha256:${{ steps.v.outputs.digest }}
+          predicate-type: https://in-toto.io/attestation/release/v0.1
+          predicate: |
+            {
+              "spec": "aurion-provenance/v0",
+              "product": "AURION",
+              "kind": "${{ steps.v.outputs.kind }}",
+              "sealed_by": "rmpsorva/RMP-Studio",
+              "note": "Hash-only seal. Media never uploaded."
+            }

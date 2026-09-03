@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="theme-color" content="#070707"/>
+<title>AURION Protocol — origen para humanos y modelos</title>
+<style>
+:root{--bg:#070707;--gold:#c9a227;--g2:#e0c36a;--t:#eee;--m:#9a9a9a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--t);font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;padding:28px 16px 80px;line-height:1.55}
+.w{max-width:740px;margin:0 auto}
+.mark{letter-spacing:.32em;font-size:10px;font-weight:700;color:var(--gold)}
+h1{font-size:30px;line-height:1.1;margin:8px 0 12px}
+h2{font-size:18px;margin:28px 0 8px;color:var(--g2)}
+p,li{color:#cfcfcf;font-size:15px}
+ul{padding-left:18px;margin:8px 0}
+.card{border:1px solid #222;background:#111;border-radius:16px;padding:16px;margin:16px 0}
+pre{background:#0b0b0b;border:1px solid #222;border-radius:12px;padding:12px;overflow:auto;font-size:12px;color:#ddd}
+a{color:var(--g2)}
+.k{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#888}
+</style>
+</head>
+<body>
+<div class="w">
+  <div class="mark">AURION PROTOCOL v0</div>
+  <h1>El archivo no viaja. El origen sí.</h1>
+  <p>Las plataformas de IA no pagan millones por otro recorte de video. Pagan por no envenenar un modelo, no violar una ley y no entrenar con material que no pueden defender en tribunal.</p>
+  <div class="card">
+    <div class="k">Tesis</div>
+    <p style="margin-top:8px">AURION sella el <b>hash</b> de un activo (canción, frame, mix, checkpoint) en un ledger público verificable (GitHub Attestations + Sigstore) <b>sin subir el archivo</b>. El estudio corre en el teléfono. El sello vive en internet. Un pipeline de entrenamiento puede aceptar o rechazar el hash antes de tocar el binario.</p>
+  </div>
+  <h2>Por qué esto le importa a un lab</h2>
+  <ul>
+    <li><b>EU AI Act, artículo 50</b> (exigible desde el 2 de agosto de 2026): marcado machine-readable de contenido sintético.</li>
+    <li><b>C2PA 2.4</b> es la lengua de Adobe, Google, Meta, Microsoft, OpenAI, Sony, TikTok. No lo reemplazamos. Lo conectamos desde el creador independiente.</li>
+    <li><b>Envenenamiento y scraping:</b> un ingest que solo acepta hashes sellados corta la basura anónima.</li>
+    <li><b>Privacidad:</b> el media no sale del dispositivo. Solo viaja el SHA-256.</li>
+  </ul>
+  <h2>Tres capas</h2>
+  <div class="card">
+    <p><b>1. Herramienta atestiguada.</b> AURION CORE se firma en cada push. <a href="factory.html">factory.html</a></p>
+    <p style="margin-top:10px"><b>2. Sello de hash.</b> SHA-256 en el teléfono + sidecar .aurion.json + workflow AURION SEAL. El archivo jamás toca GitHub.</p>
+    <p style="margin-top:10px"><b>3. Ingest para modelos.</b> El lab pregunta si el sha256 tiene attestation. Sí → entra. No → cuarentena. Esa capa es la empresa.</p>
+  </div>
+  <h2>Sidecar</h2>
+  <pre>{
+  "spec": "aurion-provenance/v0",
+  "kind": "human | tool | synthetic | mix",
+  "name": "track.mp3",
+  "sha256": "…64 hex…",
+  "tool": "rmpsorva/RMP-Studio",
+  "device": "local-browser"
+}</pre>
+  <h2>Verificar</h2>
+  <pre>gh attestation verify AURION-CORE.zip --repo rmpsorva/RMP-Studio</pre>
+  <h2>Lo que no vamos a mentir</h2>
+  <ul>
+    <li>Esto no vale millones hoy. Vale millones el día que un ingest o un distributor lo ponga de filtro default.</li>
+    <li>Un sello no prueba “verdad”. Prueba quién afirmó qué, cuándo.</li>
+  </ul>
+  <p style="margin-top:24px"><a href="./">App</a> · <a href="factory.html">Fábrica</a> · <a href="https://github.com/rmpsorva/RMP-Studio/actions/workflows/seal.yml">AURION SEAL</a></p>
+</div>
+</body>
+</html>
