@@ -1,7 +1,5 @@
 name: AURION SEAL
 
-# Sella un hash. El archivo NUNCA se sube.
-# Solo el owner del repo puede disparar workflow_dispatch.
 on:
   workflow_dispatch:
     inputs:
@@ -21,7 +19,7 @@ on:
         default: human
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
   attestations: write
 
@@ -30,6 +28,8 @@ jobs:
     name: Sellar hash
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
       - name: Validar digest
         id: v
         run: |
@@ -38,7 +38,7 @@ jobs:
           D="${D#sha256:}"
           D="$(echo "$D" | tr 'A-F' 'a-f' | tr -d '[:space:]')"
           if ! echo "$D" | grep -Eq '^[a-f0-9]{64}$'; then
-            echo "Digest invalido. Tiene que ser SHA-256 hex de 64."
+            echo "Digest invalido."
             exit 1
           fi
           NAME="$(echo '${{ inputs.name }}' | tr -d '/\\' | cut -c1-120)"
@@ -46,7 +46,7 @@ jobs:
           echo "name=$NAME" >> "$GITHUB_OUTPUT"
           echo "kind=${{ inputs.kind }}" >> "$GITHUB_OUTPUT"
 
-      - name: Firmar subject-digest (el binario no esta aqui)
+      - name: Firmar subject-digest
         uses: actions/attest@v2
         with:
           subject-name: ${{ steps.v.outputs.name }}
@@ -60,3 +60,35 @@ jobs:
               "sealed_by": "rmpsorva/RMP-Studio",
               "note": "Hash-only seal. Media never uploaded."
             }
+
+      - name: Escribir ledger.json
+        env:
+          DIGEST: ${{ steps.v.outputs.digest }}
+          NAME: ${{ steps.v.outputs.name }}
+          KIND: ${{ steps.v.outputs.kind }}
+          RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          python3 - <<'PY'
+          import json, os, datetime
+          path = "ledger.json"
+          data = json.loads(open(path, encoding="utf-8").read()) if os.path.exists(path) else {"spec":"aurion-provenance/v0","records":[]}
+          recs = data.setdefault("records", [])
+          digest = os.environ["DIGEST"]
+          recs[:] = [r for r in recs if r.get("sha256") != digest]
+          recs.append({
+            "sha256": digest,
+            "kind": os.environ["KIND"],
+            "name": os.environ["NAME"],
+            "at": datetime.datetime.utcnow().replace(microsecond=0).isoformat()+"Z",
+            "run": os.environ["RUN"]
+          })
+          data["updated_at"] = datetime.datetime.utcnow().replace(microsecond=0).isoformat()+"Z"
+          data["repo"] = os.environ.get("GITHUB_REPOSITORY", "rmpsorva/RMP-Studio")
+          open(path,"w",encoding="utf-8").write(json.dumps(data, indent=2) + "\n")
+          PY
+          git config user.name "aurion-factory"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ledger.json
+          git diff --cached --quiet && echo "sin cambios" && exit 0
+          git commit -m "ledger: ${{ steps.v.outputs.kind }} ${{ steps.v.outputs.digest }}"
+          git push
