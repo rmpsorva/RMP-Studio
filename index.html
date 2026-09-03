@@ -73,7 +73,7 @@ a.link{color:var(--g2)}
   </div>
 </div>
 <div class="w">
-<p class="tag">Convierte y entrega archivos en el teléfono. Sin nube. Sin Convertio. <a class="link" href="factory.html">CORE firmado</a></p>
+<p class="tag">El archivo no viaja. El origen sí. <a class="link" href="protocol.html">Protocolo</a> · <a class="link" href="factory.html">Fábrica</a></p>
 <section class="grid">
 <article class="card active" data-tool="video"><b>Video</b><br><span>MP4 WebM GIF · recorte · frame</span></article>
 <article class="card" data-tool="audio"><b>Audio</b><br><span>MP3 WAV M4A · recorte</span></article>
@@ -106,9 +106,10 @@ a.link{color:var(--g2)}
 <button class="btn" id="convertBtn" disabled>CONVERTIR Y DESCARGAR</button>
 <div class="row"><button class="btn ghost" id="audioBtn">EXTRAER AUDIO</button><button class="btn ghost" id="pdfBtn">IMAGEN A PDF</button></div>
 <div class="row"><button class="btn ghost" id="frameBtn">SACAR FRAME</button><button class="btn ghost" id="vaultAddBtn">GUARDAR EN VAULT</button></div>
+<button class="btn ghost" id="sealBtn">SELLAR ORIGEN (HASH)</button>
 <div class="bar" id="bar"><i id="barI"></i></div>
 <p class="status" id="status"></p>
-<p class="hint">Video pesado en iPhone: usa 720p o un recorte corto. Todo se procesa aqui, no se sube.</p>
+<p class="hint">Sellar origen calcula SHA-256 aquí. El archivo no se sube. Protocolo: aurion-provenance/v0.</p>
 </section>
 <section class="work hidden" id="pf">
 <label class="lbl">Descargar URL</label>
@@ -142,4 +143,5 @@ a.link{color:var(--g2)}
 <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
 <script src="https://unpkg.com/@ffmpeg/util@0.12.1/dist/umd/index.js"></script>
 <script src="app.js"></script>
+<script src="proto.js"></script>
 </body></html>
