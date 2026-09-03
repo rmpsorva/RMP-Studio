@@ -51,7 +51,7 @@ jobs:
           set -euo pipefail
           VERSION="AURION-CORE-${GITHUB_SHA::7}"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          mkdir -p dist/pack _site
+          mkdir -p dist/pack _site out
           python3 - <<'PY'
           import json, os, hashlib, datetime, pathlib
           sha = os.environ["GITHUB_SHA"]
@@ -88,13 +88,31 @@ jobs:
             "files": files
           }
           pathlib.Path("BUILD.json").write_text(json.dumps(build, indent=2), encoding="utf-8")
-          print(json.dumps(build, indent=2))
           PY
           for f in index.html app.js hero.js vault.html sw.js manifest.json icon.svg _headers .nojekyll factory.html protocol.html proto.js ledger.json check.html tdmrep.json VERIFY.md README.md SECURITY.md BUILD.json; do
             [ -f "$f" ] && cp "$f" dist/pack/ && cp "$f" _site/
           done
           (cd dist/pack && zip -r -9 ../AURION-CORE.zip .)
-          mkdir -p out
+          HEX=$(sha256sum dist/AURION-CORE.zip | awk '{print $1}')
+          python3 - <<PY
+          import json, os, datetime
+          hex = os.popen("sha256sum dist/AURION-CORE.zip").read().split()[0]
+          run = os.environ["GITHUB_RUN_ID"]
+          server = os.environ.get("GITHUB_SERVER_URL", "https://github.com")
+          repo = os.environ["GITHUB_REPOSITORY"]
+          rec = {"sha256": hex, "kind": "tool", "name": "AURION-CORE.zip",
+                 "at": datetime.datetime.utcnow().replace(microsecond=0).isoformat()+"Z",
+                 "run": f"{server}/{repo}/actions/runs/{run}"}
+          led = json.loads(open("ledger.json", encoding="utf-8").read())
+          led.setdefault("records", [])
+          led["records"] = [rec] + [r for r in led["records"] if r.get("sha256") != hex][:20]
+          led["updated_at"] = rec["at"]
+          open("_site/ledger.json","w",encoding="utf-8").write(json.dumps(led, indent=2)+"\n")
+          b = json.loads(open("BUILD.json", encoding="utf-8").read())
+          b["digest"] = "sha256:" + hex
+          open("BUILD.json","w",encoding="utf-8").write(json.dumps(b, indent=2)+"\n")
+          open("_site/BUILD.json","w",encoding="utf-8").write(json.dumps(b, indent=2)+"\n")
+          PY
           cp dist/AURION-CORE.zip BUILD.json out/
           (cd out && sha256sum AURION-CORE.zip BUILD.json > SHA256SUMS)
           echo "pack ready $(wc -c < out/AURION-CORE.zip) bytes"
