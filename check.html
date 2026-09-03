@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="theme-color" content="#070707"/>
+<title>AURION CHECK</title>
+<style>
+:root{--bg:#070707;--gold:#c9a227;--g2:#e0c36a;--t:#eee}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--t);font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;padding:24px 16px 64px}
+.w{max-width:720px;margin:0 auto}
+.mark{letter-spacing:.32em;font-size:10px;font-weight:700;color:var(--gold)}
+h1{font-size:26px;margin:8px 0 10px}
+p{color:#bbb;font-size:14px;line-height:1.5}
+.drop{margin-top:16px;border:1.5px dashed #3a3424;border-radius:14px;padding:28px 12px;text-align:center;background:#0d0d0d}
+.card{margin-top:14px;background:#111;border:1px solid #222;border-radius:14px;padding:14px;word-break:break-all}
+.ok{color:#8fd18f}.no{color:#e0a060}
+a{color:var(--g2)}
+input{width:100%;margin-top:10px;background:#101010;color:#eee;border:1px solid #333;border-radius:12px;padding:10px}
+</style>
+</head>
+<body>
+<div class="w">
+  <div class="mark">AURION CHECK</div>
+  <h1>¿Este archivo está declarado?</h1>
+  <p>C2PA y watermarks se caen al re-subir. Un trainer puede preguntarle a este ledger. Solo cubre lo que R.M.P selló.</p>
+  <div class="drop" id="drop">Suelta un archivo o pega el SHA-256</div>
+  <input id="hex" placeholder="pegar hash de 64 hex"/>
+  <div class="card" id="out">Cargando ledger.json…</div>
+  <p style="margin-top:14px"><a href="ledger.json">ledger.json</a> · <a href="protocol.html">protocolo</a> · <a href="./">app</a></p>
+</div>
+<script>
+let ledger={records:[]};
+fetch("./ledger.json",{cache:"no-store"}).then(r=>r.json()).then(j=>{
+  ledger=j; document.getElementById("out").textContent="Ledger: "+(j.records||[]).length+" hashes. Listo.";
+}).catch(()=>{document.getElementById("out").textContent="No pude leer ledger.json";});
+async function sha256(file){
+  const buf=await crypto.subtle.digest("SHA-256", await file.arrayBuffer());
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+function lookup(hex){
+  hex=(hex||"").toLowerCase().replace(/^sha256:/,"").trim();
+  const rec=(ledger.records||[]).find(r=>r.sha256===hex);
+  const box=document.getElementById("out");
+  if(!/^[a-f0-9]{64}$/.test(hex)){box.innerHTML="Hash inválido.";return;}
+  if(rec) box.innerHTML="<span class='ok'>EN EL LEDGER · "+rec.kind+"</span><br>"+rec.name+"<br>"+hex+(rec.run?"<br><a href='"+rec.run+"'>run</a>":"");
+  else box.innerHTML="<span class='no'>NO ESTÁ</span><br>"+hex+"<br>Este repo no declaró este archivo. No inventes que está limpio.";
+}
+document.getElementById("drop").onclick=()=>{
+  const i=document.createElement("input");i.type="file";
+  i.onchange=async()=>{if(i.files[0]) lookup(await sha256(i.files[0]));};
+  i.click();
+};
+document.getElementById("drop").addEventListener("dragover",e=>e.preventDefault());
+document.getElementById("drop").addEventListener("drop",async e=>{
+  e.preventDefault();
+  if(e.dataTransfer.files[0]) lookup(await sha256(e.dataTransfer.files[0]));
+});
+document.getElementById("hex").addEventListener("change",e=>lookup(e.target.value));
+document.getElementById("hex").addEventListener("keydown",e=>{if(e.key==="Enter")lookup(e.target.value);});
+</script>
+</body>
+</html>

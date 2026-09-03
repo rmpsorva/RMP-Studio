@@ -1,0 +1,18 @@
+{
+  "spec": "aurion-provenance/v0",
+  "scope": "only hashes declared by rmpsorva/RMP-Studio",
+  "purpose": "file-level human/synthetic/tool signal after C2PA metadata is stripped",
+  "not": "a global do-not-train registry (Spawning ai.txt shut down in 2025)",
+  "verify_tool": "https://rmpsorva.github.io/RMP-Studio/check.html",
+  "repo": "rmpsorva/RMP-Studio",
+  "updated_at": "2026-09-03T00:00:00Z",
+  "records": [
+    {
+      "sha256": "e99a6d62ca5132b765bd188d54426ed0abe06ff0cbf0aab29b53958bb5495588",
+      "kind": "tool",
+      "name": "AURION-CORE.zip",
+      "at": "2026-09-02T23:55:31Z",
+      "run": "https://github.com/rmpsorva/RMP-Studio/actions/runs/33697225706"
+    }
+  ]
+}
