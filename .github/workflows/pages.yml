@@ -39,7 +39,7 @@ jobs:
       - name: Validar nucleo
         run: |
           set -euo pipefail
-          for f in index.html app.js vault.html sw.js manifest.json icon.svg factory.html VERIFY.md; do
+          for f in index.html app.js vault.html sw.js manifest.json icon.svg factory.html protocol.html proto.js VERIFY.md; do
             test -f "$f" || { echo "FALTA $f"; exit 1; }
           done
           grep -q "AURION" index.html
@@ -62,8 +62,8 @@ jobs:
           files = []
           keep = [
             "index.html","app.js","hero.js","vault.html","sw.js","manifest.json",
-            "icon.svg","_headers",".nojekyll","factory.html","VERIFY.md","README.md",
-            "SECURITY.md","CODEOWNERS"
+            "icon.svg","_headers",".nojekyll","factory.html","protocol.html","proto.js",
+            "VERIFY.md","README.md","SECURITY.md","CODEOWNERS"
           ]
           for name in keep:
             p = pathlib.Path(name)
@@ -89,7 +89,7 @@ jobs:
           pathlib.Path("BUILD.json").write_text(json.dumps(build, indent=2), encoding="utf-8")
           print(json.dumps(build, indent=2))
           PY
-          for f in index.html app.js hero.js vault.html sw.js manifest.json icon.svg _headers .nojekyll factory.html VERIFY.md README.md SECURITY.md BUILD.json; do
+          for f in index.html app.js hero.js vault.html sw.js manifest.json icon.svg _headers .nojekyll factory.html protocol.html proto.js VERIFY.md README.md SECURITY.md BUILD.json; do
             [ -f "$f" ] && cp "$f" dist/pack/ && cp "$f" _site/
           done
           (cd dist/pack && zip -r -9 ../AURION-CORE.zip .)
@@ -175,4 +175,5 @@ jobs:
             gh attestation verify AURION-CORE.zip --repo ${{ github.repository }}
             ```
 
+            Protocolo: https://rmpsorva.github.io/RMP-Studio/protocol.html
             Live: https://rmpsorva.github.io/RMP-Studio/factory.html
