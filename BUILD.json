@@ -1,0 +1,15 @@
+{
+  "product": "AURION CORE",
+  "brand": "R.M.P — Real Mente Poder",
+  "repo": "rmpsorva/RMP-Studio",
+  "commit": "94d46c8b2901a98e568ee6785b0ec2898b688bf7",
+  "short": "94d46c8",
+  "run_id": "33698455390",
+  "run_attempt": "1",
+  "run_url": "https://github.com/rmpsorva/RMP-Studio/actions/runs/33698455390",
+  "commit_url": "https://github.com/rmpsorva/RMP-Studio/commit/94d46c8b2901a98e568ee6785b0ec2898b688bf7",
+  "digest": "sha256:85b12348ba7f17a1a344387865a6d5f883571887db549b796ca4bdf518e25a54",
+  "attested": true,
+  "built_at": "2026-09-03T00:12:46Z",
+  "verify": "gh attestation verify AURION-CORE.zip --repo rmpsorva/RMP-Studio"
+}

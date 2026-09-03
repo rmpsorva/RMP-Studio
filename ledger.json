@@ -5,8 +5,15 @@
   "not": "a global do-not-train registry (Spawning ai.txt shut down in 2025)",
   "verify_tool": "https://rmpsorva.github.io/RMP-Studio/check.html",
   "repo": "rmpsorva/RMP-Studio",
-  "updated_at": "2026-09-03T00:00:00Z",
+  "updated_at": "2026-09-03T00:18:00Z",
   "records": [
+    {
+      "sha256": "85b12348ba7f17a1a344387865a6d5f883571887db549b796ca4bdf518e25a54",
+      "kind": "tool",
+      "name": "AURION-CORE.zip",
+      "at": "2026-09-03T00:12:46Z",
+      "run": "https://github.com/rmpsorva/RMP-Studio/actions/runs/33698455390"
+    },
     {
       "sha256": "e99a6d62ca5132b765bd188d54426ed0abe06ff0cbf0aab29b53958bb5495588",
       "kind": "tool",

@@ -26,40 +26,55 @@ a{color:var(--g2)}
 <div class="w">
   <div class="mark">R . M . P</div>
   <h1>AURION CORE</h1>
-  <p class="sub">Esta no es una landing. Es la prueba de que este sitio salió de un commit concreto, en un runner de GitHub, firmado con Sigstore. Casi ningún proyecto independiente lo enciende.</p>
+  <p class="sub">Prueba de que este sitio salió de un commit concreto, firmado con Sigstore.</p>
   <div class="card">
     <div class="k">Estado del nucleo</div>
-    <p id="st" class="v warn">Leyendo BUILD.json…</p>
+    <p id="st" class="v warn">Leyendo origen…</p>
   </div>
   <div class="card" id="meta"></div>
   <div class="card">
-    <div class="k">Verificar en tu máquina</div>
+    <div class="k">Verificar</div>
     <pre id="cmd">gh attestation verify AURION-CORE.zip --repo rmpsorva/RMP-Studio</pre>
-    <p class="sub" style="margin:10px 0 0">Eso consulta el ledger público de Sigstore. Si alguien cambia un byte del ZIP, la firma no cierra.</p>
     <a class="btn" href="https://github.com/rmpsorva/RMP-Studio/releases/tag/aurion-latest">Bajar nucleo firmado</a>
-    <a class="btn" href="./" style="background:transparent;color:#e0c36a;border:1px solid #3a3118;margin-left:8px">Abrir AURION</a>
+    <a class="btn" href="check.html" style="background:transparent;color:#e0c36a;border:1px solid #3a3118;margin-left:8px">Check hash</a>
+    <a class="btn" href="./" style="background:transparent;color:#e0c36a;border:1px solid #3a3118;margin-left:8px">App</a>
   </div>
 </div>
 <script>
+function paint(b){
+  const st=document.getElementById('st');
+  st.className='v ok';
+  st.textContent='Núcleo atestiguado · '+(b.short|| (b.commit||'').slice(0,7) || 'aurion-latest');
+  document.getElementById('meta').innerHTML=[
+    ['Producto', b.product||'AURION CORE'],
+    ['Commit', b.commit||'—'],
+    ['Digest', b.digest||'—'],
+    ['Construido', b.built_at||b.published_at||'—'],
+    ['Run', b.run_url||b.html_url||'']
+  ].filter(([,v])=>v&&v!=='—').map(([k,v])=>`<div class="k" style="margin-top:10px">${k}</div><div class="v">${String(v).indexOf('http')===0?`<a href="${v}">${v}</a>`:v}</div>`).join('');
+  if(b.verify) document.getElementById('cmd').textContent=b.verify;
+}
 async function boot(){
-  const st = document.getElementById('st');
-  const meta = document.getElementById('meta');
+  const st=document.getElementById('st');
   try{
-    const r = await fetch('./BUILD.json', {cache:'no-store'});
-    if(!r.ok) throw new Error('sin BUILD.json todavía');
-    const b = await r.json();
-    st.className = 'v ok';
-    st.textContent = 'Núcleo atestiguado · ' + (b.short || b.commit.slice(0,7));
-    meta.innerHTML = [
-      ['Producto', b.product],
-      ['Commit', b.commit],
-      ['Construido', b.built_at],
-      ['Run', b.run_url],
-      ['Comando', b.verify]
-    ].map(([k,v]) => `<div class="k" style="margin-top:10px">${k}</div><div class="v">${k==='Run'?`<a href="${v}">${v}</a>`:v}</div>`).join('');
-    if(b.verify) document.getElementById('cmd').textContent = b.verify;
+    const r=await fetch('./BUILD.json',{cache:'no-store'});
+    if(r.ok){paint(await r.json());return;}
+  }catch(e){}
+  try{
+    const r=await fetch('https://api.github.com/repos/rmpsorva/RMP-Studio/releases/tags/aurion-latest');
+    if(!r.ok) throw new Error('release');
+    const rel=await r.json();
+    const digest=(rel.body||'').match(/sha256:[a-f0-9]{64}/);
+    paint({
+      product:'AURION CORE',
+      commit:(rel.body||'').match(/`([a-f0-9]{40})`/)?.[1],
+      digest:digest?digest[0]:'',
+      published_at:rel.published_at,
+      html_url:rel.html_url,
+      verify:'gh attestation verify AURION-CORE.zip --repo rmpsorva/RMP-Studio'
+    });
   }catch(e){
-    st.textContent = 'Aún no hay build inyectado. Corre Actions una vez.';
+    st.textContent='No pude leer BUILD.json ni el release. Abre GitHub Releases.';
   }
 }
 boot();

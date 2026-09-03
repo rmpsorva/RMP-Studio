@@ -1,3 +1,7 @@
+if (!window.AURION_HERO) {
+  const img = document.getElementById("heroImg");
+  if (img) img.remove();
+}
 async function aurionHash(blob){
   const buf = await crypto.subtle.digest("SHA-256", await blob.arrayBuffer());
   return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
