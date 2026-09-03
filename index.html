@@ -27,10 +27,12 @@ h1{font-size:28px;font-weight:800;line-height:1}
 .card.active{border-color:var(--gold);box-shadow:0 0 0 1px rgba(201,162,39,.25)}
 .card span{color:var(--m);font-size:12px}
 .work{margin-top:14px;background:#161616;border:1px solid #1c1c1c;border-radius:18px;padding:16px}
-.drop{border:1.5px dashed #3a3424;border-radius:14px;padding:20px 12px;text-align:center;background:#0d0d0d}
+.drop{position:relative;border:1.5px dashed #3a3424;border-radius:14px;padding:28px 12px;text-align:center;background:#0d0d0d;overflow:hidden;min-height:88px}
 .drop.over{border-color:var(--gold);background:#14110a}
-.fn{margin-top:8px;font-size:13px;color:var(--g2);word-break:break-all}
-.meta{margin-top:4px;font-size:11px;color:#888}
+.drop b{pointer-events:none;position:relative;z-index:1}
+.pick{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;font-size:48px;z-index:2}
+.fn{margin-top:8px;font-size:13px;color:var(--g2);word-break:break-all;position:relative;z-index:1;pointer-events:none}
+.meta{margin-top:4px;font-size:11px;color:#888;position:relative;z-index:1;pointer-events:none}
 .prev{margin-top:10px;max-height:160px;width:100%;object-fit:contain;border-radius:10px;background:#000;display:none}
 .lbl{display:block;margin:14px 0 8px;font-size:11px;letter-spacing:.08em;color:#bbb;text-transform:uppercase}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
@@ -75,13 +77,18 @@ a.link{color:var(--g2)}
 <div class="w">
 <p class="tag">El archivo no viaja. El origen sí. <a class="link" href="protocol.html">Protocolo</a> · <a class="link" href="factory.html">Fábrica</a></p>
 <section class="grid">
-<article class="card active" data-tool="video"><b>Video</b><br><span>MP4 WebM GIF · recorte · frame</span></article>
+<article class="card active" data-tool="video"><b>Video</b><br><span>MP4 MOV WebM GIF · recorte · frame</span></article>
 <article class="card" data-tool="audio"><b>Audio</b><br><span>MP3 WAV M4A · recorte</span></article>
-<article class="card" data-tool="image"><b>Imagen</b><br><span>JPG PNG WEBP PDF · lote</span></article>
+<article class="card" data-tool="image"><b>Imagen</b><br><span>JPG PNG WEBP HEIC PDF · lote</span></article>
 <article class="card" data-tool="file"><b>Archivo</b><br><span>URL ZIP GZIP</span></article>
 </section>
 <section class="work" id="pm">
-<div class="drop" id="drop"><b>Toca, suelta o pega</b><input id="file" type="file" class="hidden"/><div class="fn" id="fname"></div><div class="meta" id="fmeta"></div></div>
+<div class="drop" id="drop">
+  <b>Toca para elegir archivo</b>
+  <input id="file" class="pick" type="file" accept="video/*,.mp4,.mov,.m4v,.webm"/>
+  <div class="fn" id="fname"></div>
+  <div class="meta" id="fmeta"></div>
+</div>
 <img class="prev" id="prev" alt="preview"/>
 <label class="lbl">Formato</label><div class="chips" id="formats"></div>
 <div id="imageOpts" class="hidden">
@@ -98,7 +105,7 @@ a.link{color:var(--g2)}
 </div>
 <div id="mediaOpts" class="hidden">
   <label class="lbl">Escala video</label>
-  <select id="vscale"><option value="orig">Original</option><option value="720">720p (más liviano)</option><option value="1080">1080p</option></select>
+  <select id="vscale"><option value="720" selected>720p (iPhone)</option><option value="orig">Original</option><option value="1080">1080p</option></select>
   <label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:13px;color:#bbb"><input type="checkbox" id="mute"/> Silenciar video</label>
 </div>
 <div id="trimWrap" class="hidden"><label class="lbl">Recorte (segundos)</label><div class="row"><input type="number" id="tStart" placeholder="Inicio" min="0" step="0.1"/><input type="number" id="tEnd" placeholder="Fin" min="0" step="0.1"/></div></div>
@@ -109,14 +116,18 @@ a.link{color:var(--g2)}
 <button class="btn ghost" id="sealBtn">SELLAR ORIGEN (HASH)</button>
 <div class="bar" id="bar"><i id="barI"></i></div>
 <p class="status" id="status"></p>
-<p class="hint">Sellar origen calcula SHA-256 aquí. El archivo no se sube. Protocolo: aurion-provenance/v0.</p>
+<p class="hint">En iPhone: Fotos o Archivos. Videos grandes → 720p. Sellar origen no sube el archivo.</p>
 </section>
 <section class="work hidden" id="pf">
 <label class="lbl">Descargar URL</label>
 <input type="url" id="url" placeholder="https://..."/>
 <button class="btn" id="dlUrlBtn">DESCARGAR</button>
 <label class="lbl">ZIP / GZIP</label>
-<div class="drop" id="dropZip"><b>Varios archivos</b><input id="zipFiles" type="file" multiple class="hidden"/><div class="fn" id="znames"></div></div>
+<div class="drop" id="dropZip">
+  <b>Toca para elegir varios</b>
+  <input id="zipFiles" class="pick" type="file" multiple/>
+  <div class="fn" id="znames"></div>
+</div>
 <div class="row"><button class="btn" id="zipBtn">CREAR ZIP</button><button class="btn ghost" id="gzBtn">GZIP TODOS</button></div>
 <p class="status" id="zstatus"></p>
 </section>
@@ -127,7 +138,10 @@ a.link{color:var(--g2)}
 <textarea id="note" placeholder="Estado mental, lyric, idea..."></textarea>
 <button class="btn" id="noteBtn">GUARDAR NOTA</button>
 <label class="lbl">Archivos en el vault</label>
-<div class="drop" id="dropVault"><b>Meter archivo al vault</b><input id="vaultFiles" type="file" multiple class="hidden"/></div>
+<div class="drop" id="dropVault">
+  <b>Toca para meter al vault</b>
+  <input id="vaultFiles" class="pick" type="file" multiple/>
+</div>
 <div class="list" id="vlist"></div>
 <p class="status" id="vstatus"></p>
 </section>
